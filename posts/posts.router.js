@@ -39,7 +39,8 @@ router.post("/:id/comments", (req, res) => {
     id === post_id &&
     insertComment({ text, post_id })
       .then(comment => {
-        res.status(201).json(comment);
+        const { id } = comment;
+        res.status(201).json({ text, post_id, id });
       })
       .catch(() => {
         res.status(500).json({

@@ -107,4 +107,48 @@ router.get("/:id/comments", (req, res) => {
     });
 });
 
+router.delete("/:id", (req, res) => {
+  const { id } = req.params;
+  const result = findById(id).then(post => {
+    res.status(200).json(post);
+  });
+
+  if (!id) {
+    res
+      .status(404)
+      .json({ message: "The post with the specified ID does not exist." });
+  }
+
+  result.length &&
+    remove(id)
+      .then(() => {
+        return result;
+      })
+      .catch(() => {
+        res.status(500).json({ error: "The post could not be removed" });
+      });
+});
+
+router.put("/:id", (req, res) => {
+  const { id } = req.params;
+  const { title, contents } = req.body;
+  if (!id) {
+    res
+      .status(404)
+      .json({ message: "The post with the specified ID does not exist." });
+  } else if (!title || !contents) {
+    res.status(400).json({
+      errorMessage: "Please provide title and contents for the post."
+    });
+  } else {
+    update(id, { title, contents })
+      .then(count => {
+        res.status(200).json(count);
+      })
+      .catch(() => {
+        res.status(500).json({ error: "The post could not be removed" });
+      });
+  }
+});
+
 module.exports = router;
